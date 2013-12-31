@@ -143,6 +143,10 @@ openfile(
 		oflags |= O_TRUNC;
 	if (flags & IO_NONBLOCK)
 		oflags |= O_NONBLOCK;
+#ifdef O_TMPFILE
+	if (flags & IO_TMPFILE)
+		oflags |= O_TMPFILE;
+#endif
 
 	fd = open(path, oflags, mode);
 	if (fd < 0) {
@@ -247,6 +251,7 @@ open_help(void)
 " -r -- open with O_RDONLY, the default is O_RDWR\n"
 " -s -- open with O_SYNC\n"
 " -t -- open with O_TRUNC (truncate the file to zero length if it exists)\n"
+" -T -- open with O_TMPFILE\n"
 " -R -- mark the file as a realtime XFS file immediately after opening it\n"
 " Note1: usually read/write direct IO requests must be blocksize aligned;\n"
 "        some kernels, however, allow sectorsize alignment for direct IO.\n"
@@ -272,7 +277,7 @@ open_f(
 		return 0;
 	}
 
-	while ((c = getopt(argc, argv, "FRacdfm:nrstx")) != EOF) {
+	while ((c = getopt(argc, argv, "TFRacdfm:nrstx")) != EOF) {
 		switch (c) {
 		case 'F':
 			/* Ignored / deprecated now, handled automatically */
@@ -305,6 +310,9 @@ open_f(
 			break;
 		case 't':
 			flags |= IO_TRUNC;
+			break;
+		case 'T':
+			flags |= IO_TMPFILE;
 			break;
 		case 'R':
 		case 'x':	/* backwards compatibility */
@@ -731,7 +739,7 @@ open_init(void)
 	open_cmd.argmin = 0;
 	open_cmd.argmax = -1;
 	open_cmd.flags = CMD_NOMAP_OK | CMD_NOFILE_OK | CMD_FOREIGN_OK;
-	open_cmd.args = _("[-acdrstx] [path]");
+	open_cmd.args = _("[-acdrstTx] [path]");
 	open_cmd.oneline = _("open the file specified by path");
 	open_cmd.help = open_help;
 

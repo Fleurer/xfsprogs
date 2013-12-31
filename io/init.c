@@ -136,7 +136,7 @@ init(
 	pagesize = getpagesize();
 	gettimeofday(&stopwatch, NULL);
 
-	while ((c = getopt(argc, argv, "ac:dFfmp:nrRstVx")) != EOF) {
+	while ((c = getopt(argc, argv, "ac:dFfmp:nrRstTVx")) != EOF) {
 		switch (c) {
 		case 'a':
 			flags |= IO_APPEND;
@@ -178,6 +178,9 @@ init(
 			break;
 		case 'R':
 			flags |= IO_REALTIME;
+			break;
+		case 'T':
+			flags |= IO_TMPFILE;
 			break;
 		case 'x':
 			expert = 1;
