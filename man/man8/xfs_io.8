@@ -371,6 +371,11 @@ system call described in the
 .BR xfsctl (3)
 manual page.
 .TP
+.BI flink
+Calls
+.BR linkat(2)
+to link a file descriptor to file system.
+.TP
 .BI "falloc [ \-k ]" " offset length"
 Allocates reserved, unwritten space for part of a file using the
 fallocate routine as described in the
