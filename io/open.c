@@ -29,6 +29,7 @@ static cmdinfo_t statfs_cmd;
 static cmdinfo_t chproj_cmd;
 static cmdinfo_t lsproj_cmd;
 static cmdinfo_t extsize_cmd;
+static cmdinfo_t flink_cmd;
 static prid_t prid;
 static long extsize;
 
@@ -730,6 +731,20 @@ statfs_f(
 	return 0;
 }
 
+static int
+flink_f(
+	int		argc,
+	char		**argv)
+{
+	char		*path = argv[1];
+
+	if (linkat(file->fd, "", AT_FDCWD, path, AT_EMPTY_PATH) < 0) {
+		fprintf(stderr, _("%s: can not flink on %s: %s\n"),
+			progname, path, strerror(errno));
+	}
+	return 0;
+}
+
 void
 open_init(void)
 {
@@ -795,6 +810,14 @@ open_init(void)
 		_("get/set preferred extent size (in bytes) for the open file");
 	extsize_cmd.help = extsize_help;
 
+	flink_cmd.name = "flink";
+	flink_cmd.cfunc = flink_f;
+	flink_cmd.args = _("path");
+	flink_cmd.argmin = 1;
+	flink_cmd.argmax = 1;
+	flink_cmd.flags = CMD_NOMAP_OK | CMD_FOREIGN_OK;
+	flink_cmd.oneline = _("link the current open file to a path");
+
 	add_command(&open_cmd);
 	add_command(&stat_cmd);
 	add_command(&close_cmd);
@@ -802,4 +825,7 @@ open_init(void)
 	add_command(&chproj_cmd);
 	add_command(&lsproj_cmd);
 	add_command(&extsize_cmd);
+	if (expert) {
+		add_command(&flink_cmd);
+	}
 }
